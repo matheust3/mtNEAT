@@ -1,2 +1,2 @@
-# neat
+# mtNEAT
 An implementation of the NEAT algorithm in C ++
