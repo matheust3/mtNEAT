@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-set(pythonLib True)
+set(pythonLib False)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
 
@@ -13,6 +13,12 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
 		link_directories(${Matlab_LIBRARIES})
 
 		message(STATUS "COM MATLAB")
+		message("copilando neat.exe")
+		# Adicione a origem ao executável deste projeto.
+		add_executable (NEAT "NEAT.cpp" "NEAT.h" "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp" )
+		if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
+			target_link_libraries(NEAT ${Matlab_LIBRARIES})
+		endif()
 	endif()
 endif()
 
@@ -40,29 +46,15 @@ if(pythonLib)
 	# method (1): generate `examplelib.pyd`
 	#pybind11_add_module(examplelib pythonModule.cpp biocenosis.cpp)
 
-	if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
-		message("modulo python Windows neat.pyd")
-		# method (2): generate `examplelib.dll` rename to `examplelib.pyd`
-		add_library(mtNEAT MODULE pythonModule.cpp "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp")
-		target_link_libraries(mtNEAT pybind11::module ${Matlab_LIBRARIES})
-			set_target_properties(mtNEAT PROPERTIES SUFFIX ".pyd")
-		MESSAGE( [Main] " pybind11_INCLUDE_DIRS = ${pybind11_INCLUDE_DIRS}")
-		MESSAGE( [Main] " pybind11_LIBRARIES = ${pybind11_LIBRARIES}")
-	else()
-		message("modulo python linux neat.so")
-		pybind11_add_module(mtNEAT pythonModule.cpp "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp")
-		set_target_properties(mtNEAT PROPERTIES SUFFIX ".so")
-	endif()
-	#add_executable(cpp_use_python cpp_use_python.cpp)
-	#target_link_libraries(cpp_use_python PRIVATE pybind11::embed)
+	message("modulo python neat.pyd")
+	add_library(mtNEAT MODULE pythonModule.cpp "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp")
+	target_link_libraries(mtNEAT pybind11::module ${Matlab_LIBRARIES})
+		set_target_properties(mtNEAT PROPERTIES SUFFIX ".pyd")
+	MESSAGE( [Main] " pybind11_INCLUDE_DIRS = ${pybind11_INCLUDE_DIRS}")
+	MESSAGE( [Main] " pybind11_LIBRARIES = ${pybind11_LIBRARIES}")
 else()
-	message("copilando neat.exe")
-	# Adicione a origem ao executável deste projeto.
-	add_executable (NEAT "NEAT.cpp" "NEAT.h" "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp" )
-	if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
-		target_link_libraries(NEAT ${Matlab_LIBRARIES})
+	if(${CMAKE_SYSTEM_NAME} STREQUAL  "Linux")
+		message("modulo python linux neat.so")
+		add_library(mtNEAT SHARED "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp")
 	endif()
 endif()
-
-
-# TODO: Adicione testes e instale destinos, se necessário.
