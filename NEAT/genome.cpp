@@ -23,8 +23,8 @@ _nInputs(nInputs), _nOut(nOuts), _fitness(0), _recurrent(recurrent)
 	//Para cada saida
 	for (size_t outId = 0; outId < _nOut; outId++)
 	{
-		//Liga cada entrada à cada saida por meio um gene sinaptico
-		//Imaginariamente existem os neuronios de entrada cada um com seu id(mas só uma representacao deles)
+		//Liga cada entrada ï¿½ cada saida por meio um gene sinaptico
+		//Imaginariamente existem os neuronios de entrada cada um com seu id(mas sï¿½ uma representacao deles)
 		//Cria o node
 		Node node(_nInputs + outId, (double)1000, (double)outId);
 		node._innovationId = _innovationGenerator->getInnovation(node);
@@ -103,9 +103,9 @@ void Genome::AddConnection()
 	bool mutate(false);
 	//Distribuicao de saida pode conter as entradas
 	std::uniform_int_distribution<size_t> firstNodeIdDist(0, _nodes.size() + _nInputs - 1);
-	//A distribuicao de entrada só poderao ser nós
+	//A distribuicao de entrada sï¿½ poderao ser nï¿½s
 	std::uniform_int_distribution<size_t> secondNodeIdDist(0, _nodes.size() - 1);
-	//Usado para saber se será recorrent
+	//Usado para saber se serï¿½ recorrent
 	std::uniform_int_distribution<size_t> halfDist(0, 1);
 	size_t count = 0;
 	do
@@ -117,10 +117,10 @@ void Genome::AddConnection()
 		//SEGUNDO NODE
 		size_t secondId = secondNodeIdDist(rng);
 		//Id real do node
-		size_t secondNodeId = _nodes[secondId]._id; //Não leva em conta as entradas
-		//Conexão recorrente?
+		size_t secondNodeId = _nodes[secondId]._id; //Nï¿½o leva em conta as entradas
+		//Conexï¿½o recorrente?
 		bool recurrent;
-		//Se o primeiro node esta na mesma camada ou em uma camada mais atrás eh obrigatóriamente recorrente
+		//Se o primeiro node esta na mesma camada ou em uma camada mais atrï¿½s eh obrigatï¿½riamente recorrente
 		if (firstId >= _nInputs && _nodes[firstId - _nInputs]._x >= _nodes[secondId]._x)
 		{
 			//Se pode ser recorrente
@@ -144,7 +144,7 @@ void Genome::AddConnection()
 			else
 				recurrent = false;
 		}
-		//Verifica em cada gene do node se ele ja não tinha essa conexão
+		//Verifica em cada gene do node se ele ja nï¿½o tinha essa conexï¿½o
 		for (auto geneId = 0; geneId < _nodes[secondId]._genes.size(); geneId++)
 		{
 			//Se essa conexao ja existe
@@ -184,12 +184,12 @@ void Genome::AddNode()
 	std::mt19937_64 rng(dev());
 	//distribuicao contendo o numero de genes
 	std::uniform_int_distribution<size_t> geneDist(0, _genes.size() - 1);
-	//Garante que esse novo nó já não existe
+	//Garante que esse novo nï¿½ jï¿½ nï¿½o existe
 	while (true)
 	{
-		//Itaretor do gene que será afetado
+		//Itaretor do gene que serï¿½ afetado
 		auto gene = _genes.begin();
-		//Desloca o gene para um gene aleatório
+		//Desloca o gene para um gene aleatï¿½rio
 		std::advance(gene, geneDist(rng));
 		//Desativa o gene
 		gene->second._active = false;
@@ -225,7 +225,7 @@ void Genome::AddNode()
 		double x = (x1 + x2) / 2;
 		double y = (y1 + y2) / 2;
 		bool exist = false;
-		//Verifica se ja existe um nó nessa posicao
+		//Verifica se ja existe um nï¿½ nessa posicao
 		for (Node& node : _nodes) {
 			if (node._x == x && node._y == y)
 			{
@@ -301,7 +301,7 @@ double Genome::ActivationFunction(const double& x, const Node& node)
 
 Genome Genome::CrossOver(const Genome& genome)
 {
-	//Novo Genoma <- o genoma que chamu a função (melhor genoma)
+	//Novo Genoma <- o genoma que chamu a funï¿½ï¿½o (melhor genoma)
 	Genome newGenome(*this);
 	std::uniform_int_distribution<int> half(0, 1);
 
@@ -374,7 +374,7 @@ void Genome::Mutation(bool noTopology)
 					//Numeor de tentativas de fazer a mutacao
 					size_t count = 0;
 					bool mutate(false);
-					//Probabilidade de sofrer mutacao nos pesos seguindo a distribuição gauseana
+					//Probabilidade de sofrer mutacao nos pesos seguindo a distribuiï¿½ï¿½o gauseana
 					prob = std::uniform_int_distribution<int>(0, 90);
 					do
 					{
@@ -455,146 +455,6 @@ void Genome::Mutation(bool noTopology)
 	}
 }
 
-#ifdef _WIN32
-void Genome::Plot()
-{
-	using namespace matlab::engine;
-
-	//Abre a janela do matlab
-	const std::vector<String>& options = std::vector<String>(1, u"-desktop");
-	//const std::vector<String>& options = std::vector<String>(1, u"");
-	std::unique_ptr<MATLABEngine> matlabPtr = startMATLAB(options); //Inicia o matlab
-	matlab::data::ArrayFactory factory; //Fucoes para lidar com dados no matlab
-	//PLOTA OS NODES
-	matlabPtr->eval(u"nodeCallback = @(src,evt) msgbox({ strcat('Id:', num2str(src.UserData(1))),strcat('Func:', src.UserData(2))})");
-	//Para cada entrada
-	for (size_t inputId = 0; inputId < _nInputs; inputId++)
-	{
-		std::string nodeX = std::to_string(0);
-		std::string nodeY = std::to_string(inputId);
-		std::string nodeId = std::to_string(-1);
-		//plota o node
-		matlabPtr->eval(u"plot(" + std::basic_string<char16_t>(nodeX.begin(), nodeX.end()) +
-			u"," + std::basic_string<char16_t>(nodeY.begin(), nodeY.end()) + +u",'o','ButtonDownFcn', nodeCallback,'UserData',[" +
-			std::basic_string<char16_t>(nodeId.begin(), nodeId.end()) + u" \"input\"]); hold on");
-	}
-	//Para cada node
-	for (size_t nodeId = 0; nodeId < _nodes.size(); nodeId++)
-	{
-		std::string nodeX = std::to_string(_nodes[nodeId]._x);
-		std::string nodeY = std::to_string(_nodes[nodeId]._y);
-		std::string nodeIdSTR = std::to_string(nodeId);
-		std::basic_string<char16_t> functionType;
-		switch (_nodes[nodeId]._funcType)
-		{
-		case(Node::FUNCTION_TYPE::COS):
-			functionType = u"\"cos\"";
-			break;
-		case(Node::FUNCTION_TYPE::NEG_COS):
-			functionType = u"\"-cos\"";
-			break;
-		case(Node::FUNCTION_TYPE::NEG_SIG):
-			functionType = u"\"-sig\"";
-			break;
-		case(Node::FUNCTION_TYPE::NEG_SIN):
-			functionType = u"\"-sen\"";
-			break;
-		case(Node::FUNCTION_TYPE::SIG):
-			functionType = u"\"sig\"";
-			break;
-		case(Node::FUNCTION_TYPE::SIN):
-			functionType = u"\"sen\"";
-			break;
-		case(Node::FUNCTION_TYPE::TANH):
-			functionType = u"\"tanH\"";
-			break;
-		default:
-			break;
-		}
-		//plota o node
-		matlabPtr->eval(u"plot(" + std::basic_string<char16_t>(nodeX.begin(), nodeX.end()) +
-			u"," + std::basic_string<char16_t>(nodeY.begin(), nodeY.end()) + +u",'o','ButtonDownFcn', nodeCallback,'UserData',[" +
-			std::basic_string<char16_t>(nodeIdSTR.begin(), nodeIdSTR.end()) + u" " + functionType + u"]); hold on");
-	}
-	//cria a funcao que desenha as sinapses
-	matlabPtr->eval(u"drawArrow = @(x,y,varargin) quiver( x(1),y(1),x(2)-x(1),y(2)-y(1),0, varargin{:} )");
-	matlabPtr->eval(u"synapseCallback = @(src,evt) msgbox({ strcat('wieght:', num2str(src.UserData(1))), strcat('InnovationId:', num2str(src.UserData(2)))})");
-	//PLOTA AS SINAPSES
-	size_t geneId = 0;
-	for (size_t countGene = 0; countGene < _genes.size(); countGene++)
-	{
-		while (_genes.count(geneId) < 1)
-		{
-			geneId++;
-			continue;
-		}
-		//PARA O X
-		std::string x1 = "x1=[";
-		//Se for de entrada
-		if (_genes[geneId]._nodes[0] < _nInputs)
-		{
-			x1 += "0 ";
-		}
-		else
-		{
-			x1 += std::to_string(_nodes[_genes[geneId]._nodes[0] - _nInputs]._x) + " ";
-		}
-		//Se for de entrada
-		if (_genes[geneId]._nodes[1] < _nInputs)
-		{
-			x1 += "0]";
-		}
-		else
-		{
-			x1 += std::to_string(_nodes[_genes[geneId]._nodes[1] - _nInputs]._x) + "]";
-		}
-		//PARA O Y
-		std::string y1 = "y1=[";
-		//Se for de entrada
-		if (_genes[geneId]._nodes[0] < _nInputs)
-		{
-			y1 += std::to_string(_genes[geneId]._nodes[0]) + " ";
-		}
-		else
-		{
-			y1 += std::to_string(_nodes[_genes[geneId]._nodes[0] - _nInputs]._y) + " ";
-		}
-		//Se for de entrada
-		if (_genes[geneId]._nodes[1] < _nInputs)
-		{
-			y1 += std::to_string(_genes[geneId]._nodes[1]) + "]";
-		}
-		else
-		{
-			y1 += std::to_string(_nodes[_genes[geneId]._nodes[1] - _nInputs]._y) + "]";
-		}
-		//Escreve o x e y
-		matlabPtr->eval(std::basic_string<char16_t>(x1.begin(), x1.end()));
-		matlabPtr->eval(std::basic_string<char16_t>(y1.begin(), y1.end()));
-		std::string weightSTR(std::to_string(_genes[geneId]._weight));
-		std::string InnovationSTR(std::to_string(_genes[geneId]._innovationId));
-		std::basic_string<char16_t> userData = u"[" + std::basic_string<char16_t>(weightSTR.begin(), weightSTR.end()) + u" " + std::basic_string<char16_t>(InnovationSTR.begin(), InnovationSTR.end()) + u"]";
-		if (_genes[geneId]._recurrent)
-		{
-			if (_genes[geneId]._active)
-				matlabPtr->eval(u"drawArrow(x1,y1,'linewidth',0.05,'color','g','ShowArrowHead', 'off', 'Marker','s', 'MarkerSize',4, 'MarkerFaceColor',[0 0 1],'ButtonDownFcn', synapseCallback,'UserData', " + userData + u")");
-			else
-				matlabPtr->eval(u"drawArrow(x1,y1,'linewidth',0.05,'color','y','ShowArrowHead', 'off', 'Marker','s', 'MarkerSize',4, 'MarkerFaceColor',[0 0 1],'ButtonDownFcn', synapseCallback,'UserData', " + userData + u")");
-		}
-		else
-		{
-			if (_genes[geneId]._active)
-				matlabPtr->eval(u"drawArrow(x1,y1,'linewidth',0.05,'color','r','ShowArrowHead', 'off', 'Marker','s', 'MarkerSize',4, 'MarkerFaceColor',[0 0 1],'ButtonDownFcn', synapseCallback,'UserData', " + userData + u")");
-			else
-				matlabPtr->eval(u"drawArrow(x1,y1,'linewidth',0.05,'color','y','ShowArrowHead', 'off', 'Marker','s', 'MarkerSize',4, 'MarkerFaceColor',[0 0 1],'ButtonDownFcn', synapseCallback,'UserData', " + userData + u")");
-		}
-		geneId++;
-	}
-	std::cout << "press enter to end\n";
-	std::cin.ignore(std::cin.rdbuf()->in_avail());
-	std::cin.ignore();
-}
-#endif
 vector<double> Genome::Process(const map<size_t, double>& input)
 {
 	map<size_t, double> outs = input;

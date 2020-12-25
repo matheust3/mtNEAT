@@ -8,10 +8,6 @@
 #include "gene.hpp"
 #include "node.hpp"
 #include "innovationGenerator.hpp"
-#ifdef _WIN32
-#include <MatlabEngine.hpp>
-#include <MatlabDataArray.hpp>
-#endif
 
 using std::cout;
 using std::cin;
@@ -34,20 +30,13 @@ public:
 	double ActivationFunction(const double& x, const Node&node);
 	/// <summary>
 	/// Faz o crossover de dois genomas
-	/// O genoma da função é escolhido como melhor
+	/// O genoma da funï¿½ï¿½o ï¿½ escolhido como melhor
 	/// </summary>
 	Genome CrossOver(const Genome& genome);
 	/// <summary>
 	/// Cria uma mutacao no genoma
 	/// </summary>
 	void Mutation(bool noTopology = false);
-
-#ifdef _WIN32
-	/// <summary>
-	/// Plota uma representacao do genoma
-	/// </summary>
-	void Plot();
-#endif // _WIN32
 
 
 	/// <summary>

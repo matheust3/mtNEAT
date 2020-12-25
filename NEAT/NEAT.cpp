@@ -66,10 +66,6 @@ void TestXOR() {
 			biocenosis[genomeId]._fitness += pow((out[0] - (-1)), 2) / 4;
 		}
 		biocenosis.Evolve();
-#ifdef _WIN32
-		if (biocenosis._genomes[0]->_fitness == 0.0000)
-			biocenosis._genomes[0]->Plot();
-#endif // _WIN32
 
 		cout << "gen: " << count<< " error:"<< biocenosis._genomes[0]->_fitness << endl;
 		count++;
@@ -118,10 +114,6 @@ void Test1Input()
 			biocenosis[genomeId]._fitness += pow((out[0] - (-1)), 2) / 4;
 		}
 		biocenosis.Evolve();
-#ifdef _WIN32
-		if (biocenosis._genomes[0]->_fitness == 0.0000)
-			biocenosis._genomes[0]->Plot();
-#endif // _WIN32
 
 		cout << "gen: " << count << " error:" << biocenosis._genomes[0]->_fitness << endl;
 		count++;

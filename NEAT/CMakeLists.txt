@@ -3,27 +3,10 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-set(pythonLib False)
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
-
-	find_package(MATLAB)
-	if(Matlab_FOUND)
-		INCLUDE_DIRECTORIES(${Matlab_INCLUDE_DIRS})
-		link_directories(${Matlab_LIBRARIES})
-
-		message(STATUS "COM MATLAB")
-		message("copilando neat.exe")
-		# Adicione a origem ao executável deste projeto.
-		add_executable (NEAT "NEAT.cpp" "NEAT.h" "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp" )
-		if(${CMAKE_SYSTEM_NAME} STREQUAL  "Windows")
-			target_link_libraries(NEAT ${Matlab_LIBRARIES})
-		endif()
-	endif()
-endif()
+set(pythonLib True)
 
 if(pythonLib)
-
+	set(pybind11_DIR C:\\Users\\geant\\Desktop\\pybind11\\installer\\share\\cmake\\pybind11)
 	message("copilando python module")
 	enable_language(C)
 	enable_language(CXX)
@@ -34,17 +17,6 @@ if(pythonLib)
 
 	MESSAGE( [Main] " pybind11_INCLUDE_DIRS = ${pybind11_INCLUDE_DIRS}")
 	MESSAGE( [Main] " pybind11_LIBRARIES = ${pybind11_LIBRARIES}")
-	#
-	#   # Create an extension module
-	#   add_library(mylib MODULE main.cpp)
-	#   target_link_libraries(mylib pybind11::module)
-	#
-	#   # Or embed the Python interpreter into an executable
-	#   add_executable(myexe main.cpp)
-	#   target_link_libraries(myexe pybind11::embed)
-
-	# method (1): generate `examplelib.pyd`
-	#pybind11_add_module(examplelib pythonModule.cpp biocenosis.cpp)
 
 	message("modulo python neat.pyd")
 	add_library(mtNEAT MODULE pythonModule.cpp "species.cpp" "biocenosis.cpp" "gene.cpp" "genome.cpp" "innovationGenerator.cpp" "node.cpp")
