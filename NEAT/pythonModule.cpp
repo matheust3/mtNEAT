@@ -6,7 +6,7 @@ namespace py = pybind11;
 #include "headers/biocenosis.hpp"
 #include "headers/genome.hpp"
 
-PYBIND11_MODULE(tneat, m) {
+PYBIND11_MODULE(mtNEAT, m) {
 
 	m.doc() = "Algoritimo NEAT por Matheus Toniolli";
 
@@ -16,7 +16,7 @@ PYBIND11_MODULE(tneat, m) {
 		.def(py::init<size_t, size_t, bool>(),"Cria um novo objeto Biocenosis", py::arg("nInputs"), py::arg("nOuts"), py::arg("recurrent") = true)
 		.def(py::init< const Biocenosis&>())
 		.def(py::init<>())
-		//Funções
+		//Funï¿½ï¿½es
 		.def("Evolve", &Biocenosis::Evolve, "Evolui os genomas")
 		//Membros
 		.def_readonly("_recurrent",&Biocenosis::_recurrent)
